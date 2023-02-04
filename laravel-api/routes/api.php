@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\FcaCredsController;
+use App\Http\Controllers\FcaRegisterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -31,7 +32,14 @@ Route::prefix('/fca-creds')->group(function() {
     Route::delete('/{fca_creds}', [FcaCredsController::class, 'destroy']);
 });
 
-Route::apiResource('/fca-creds', FcaCredsController::class);
+/*
+| FCA REGISTER ROUTES
+*/
+Route::prefix('/fca-register')->group(function() {
+    Route::post('/check-exists', [FcaRegisterController::class, 'checkFirmExists']);
+});
+
+//Route::apiResource('/fca-creds', FcaCredsController::class);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
