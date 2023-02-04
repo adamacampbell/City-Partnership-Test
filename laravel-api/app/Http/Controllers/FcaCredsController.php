@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreFcaCredsRequest;
 use App\Http\Requests\UpdateFcaCredsRequest;
 use App\Models\FcaCreds;
+use App\Http\Resources\FcaCredsResource;
 
 class FcaCredsController extends Controller
 {
@@ -15,7 +16,7 @@ class FcaCredsController extends Controller
      */
     public function index()
     {
-        //
+        return FcaCredsResource::collection(FcaCreds::all());
     }
 
     /**
@@ -36,7 +37,13 @@ class FcaCredsController extends Controller
      */
     public function store(StoreFcaCredsRequest $request)
     {
-        //
+        $fcaCreds = FcaCreds::create([
+            'email' => $request->email,
+            'key' => $request->key
+        ]);
+        // ENFORCE ONCE CRED ENTRY
+        FcaCreds::whereNot('id', $fcaCreds->id)->delete();
+        return new FcaCredsResource($fcaCreds);
     }
 
     /**
@@ -47,7 +54,9 @@ class FcaCredsController extends Controller
      */
     public function show(FcaCreds $fcaCreds)
     {
-        //
+        // JUST RETURN FIRST, WE SHOULD ONLY ALLOW 1 ENTRY
+        $creds = FcaCreds::first();
+        return new FcaCredsResource($creds);
     }
 
     /**
@@ -70,7 +79,12 @@ class FcaCredsController extends Controller
      */
     public function update(UpdateFcaCredsRequest $request, FcaCreds $fcaCreds)
     {
-        //
+        $fcaCreds->update([
+            'email' => $request->email,
+            'key' => $request->key
+        ]);
+
+        return new FcaCredsResource($fcaCreds);
     }
 
     /**
@@ -81,6 +95,7 @@ class FcaCredsController extends Controller
      */
     public function destroy(FcaCreds $fcaCreds)
     {
-        //
+        $fcaCreds->delete();
+        return response(null, 204);
     }
 }

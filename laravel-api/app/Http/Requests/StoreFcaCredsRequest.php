@@ -13,7 +13,8 @@ class StoreFcaCredsRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        // SET TO TRUE, AS NO AUTHENTICATION IN PLACE FOR SIMPLICITY
+        return true;
     }
 
     /**
