@@ -47,8 +47,8 @@ class FcaRegisterController extends Controller
             case 'FSR-API-02-01-11':
                 $result = response(
                     [
-                        'status' => 'fail',
-                        'message' => 'Firm not found',
+                        'status' => 'warning',
+                        'message' => "Firm {$request->frn} not found",
                         'response' => $response
                     ], 200
                 );
@@ -57,7 +57,7 @@ class FcaRegisterController extends Controller
                 $result = response(
                     [
                         'status' => 'success',
-                        'message' => 'Firm found',
+                        'message' => "Firm {$request->frn} found - {$response->Data[0]->{'Organisation Name'}}",
                         'response' => $response
                     ], 200
                 );
@@ -65,7 +65,7 @@ class FcaRegisterController extends Controller
             default:
                 $result = response(
                     [
-                        'status' => 'fail',
+                        'status' => 'danger',
                         'message' => 'Unknown error occurred',
                         'response' => $response
                     ]

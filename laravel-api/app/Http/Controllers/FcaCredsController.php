@@ -6,6 +6,7 @@ use App\Http\Requests\StoreFcaCredsRequest;
 use App\Http\Requests\UpdateFcaCredsRequest;
 use App\Models\FcaCreds;
 use App\Http\Resources\FcaCredsResource;
+use Illuminate\Support\Facades\Validator;
 
 class FcaCredsController extends Controller
 {
@@ -54,11 +55,24 @@ class FcaCredsController extends Controller
      */
     public function storeWeb(StoreFcaCredsRequest $request)
     {
+        // VALIDATE REQUEST
+        $validator = Validator::make($request->all(), [
+            "frn" => "required"
+        ]);
+
+        if ($validator->fails()) {
+            return redirect('/')
+                ->with('creds-status', 'danger')
+                ->with('creds-message', 'Missing FCA Credentials');
+        }
+
+        // CREATE NEW CRED ENTRY
         $fcaCreds = FcaCreds::create([
             'email' => $request->email,
             'key' => $request->key
         ]);
-        // ENFORCE ONCE CRED ENTRY
+
+        // ENFORCE ONE CRED ENTRY
         FcaCreds::whereNot('id', $fcaCreds->id)->delete();
         
         // UPDATE UI

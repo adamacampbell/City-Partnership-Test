@@ -86,11 +86,11 @@ class FormController extends Controller
         switch($response->Status) {
             case 'FSR-API-02-01-11':
                 $status = 'warning';
-                $message = 'Firm not found';
+                $message = "Firm {$request->frn} not found";
                 break;
             case 'FSR-API-02-01-00':
                 $status = 'success';
-                $message = 'Firm found';
+                $message = "Firm {$request->frn} found - {$response->Data[0]->{'Organisation Name'}}";
                 break;
             default:
                 $status = 'danger';

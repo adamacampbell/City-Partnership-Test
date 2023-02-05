@@ -13,3 +13,6 @@ Everyone has their own preferences regarding the use of separators in URLs, I te
 
 ## 5. Caching Solution
 I opted to go for a very basic cahing solution, using database as my CACHE_DRIVER. I chose database, as the spec mentioned the tool 'growing over time', and I thought this to be the more scalable approach. To enable caching, I thinkg the .env file will have to be modified to set CACHE_DRIVER=database.
+
+## 6. Laravel Version
+I Used Laravel Framework 9.50.2

@@ -34,20 +34,11 @@
         <!-- FCA CREDENTIALS STATUS FEEDBACK -->
         <div class="container mt-4">
             @if (session('creds-status'))
-                @switch(session('creds-status'))
-                    @case('success')
-                        <div class="alert alert-success">
-                            {{ session('creds-message') }}
-                        </div>
-                        @break
-                    @case('fail')
-                        <div class="alert alert-danger">
-                            {{ session('creds-message') }}
-                        </div>
-                        @break
-                @endswitch
+                <div class="alert alert-{{ session('creds-status')}}">
+                    {{ session('creds-message') }}
+                </div>
             @endif
-    </div>
+        </div>
 
         <!-- CHECK FIRM EXISTS -->
         <div class="card" style="margin-top: 20px">
