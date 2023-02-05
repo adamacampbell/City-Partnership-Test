@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 //* DEBUG ROUTES *//
+// HARMLESS DEBUG ROUTE USED TO DEBUG CONNECTION ISSUES (DOCKER)
 Route::get('/debug/test', function(Request $request) {
     return 'PASS';
 });
@@ -39,11 +40,3 @@ Route::prefix('/fca-register')->group(function() {
     Route::post('/check-exists', [FcaRegisterController::class, 'checkFirmExists']);
 });
 
-//Route::apiResource('/fca-creds', FcaCredsController::class);
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-
-    //* FCA CREDENTIAL API CALLS *//
-    Route::get('/fca-creds', [FcaCredsController::class, 'show']);
-});

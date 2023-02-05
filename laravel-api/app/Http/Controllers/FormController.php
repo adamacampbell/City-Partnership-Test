@@ -2,19 +2,45 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreFcaRegisterRequest;
-use App\Http\Requests\UpdateFcaRegisterRequest;
+use App\Http\Requests\StoreFormRequest;
+use App\Http\Requests\UpdateFormRequest;
+use App\Models\Form;
 use App\Models\FcaCreds;
-use App\Models\FcaRegister;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 
-class FcaRegisterController extends Controller
+class FormController extends Controller
 {
-    public function checkFirmExists(Request $request) {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        //
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \App\Http\Requests\StoreFormRequest  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(StoreFormRequest $request)
+    {
         // VALIDATE REQUEST
         $validator = Validator::make($request->all(), [
             "frn" => "required"
@@ -31,8 +57,10 @@ class FcaRegisterController extends Controller
         $fcaCreds = FcaCreds::first();
 
         // CHECK CACHE FOR FRN
-        $response = Cache::get("frn_exists_{$request->frn}");    
-        if ($response !== null) return $response;
+        $result = Cache::get("frn_exists_{$request->frn}");    
+        if ($result !== null) return redirect('/')
+            ->with('status', $result->status)
+            ->with('message', $result->message);
 
         // MAKE FCA API CALL
         $response = Http::withHeaders([
@@ -68,7 +96,7 @@ class FcaRegisterController extends Controller
                         'status' => 'fail',
                         'message' => 'Unknown error occurred',
                         'response' => $response
-                    ]
+                    ], 200
                 );
                 break;
         }
@@ -76,48 +104,18 @@ class FcaRegisterController extends Controller
         // CACHE RESPONSE
         Cache::put("frn_exists_{$request->frn}", $result, 60);
 
-        return $result;
-    }
-
-    // TODO: REMOVE DEFAULT CONTROLS?
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreFcaRegisterRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreFcaRegisterRequest $request)
-    {
-        //
+        return redirect('/')
+            ->with('status', $result->content('status'))
+            ->with('message', $result->content('message'));
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\FcaRegister  $fcaRegister
+     * @param  \App\Models\Form  $form
      * @return \Illuminate\Http\Response
      */
-    public function show(FcaRegister $fcaRegister)
+    public function show(Form $form)
     {
         //
     }
@@ -125,10 +123,10 @@ class FcaRegisterController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\FcaRegister  $fcaRegister
+     * @param  \App\Models\Form  $form
      * @return \Illuminate\Http\Response
      */
-    public function edit(FcaRegister $fcaRegister)
+    public function edit(Form $form)
     {
         //
     }
@@ -136,11 +134,11 @@ class FcaRegisterController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateFcaRegisterRequest  $request
-     * @param  \App\Models\FcaRegister  $fcaRegister
+     * @param  \App\Http\Requests\UpdateFormRequest  $request
+     * @param  \App\Models\Form  $form
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateFcaRegisterRequest $request, FcaRegister $fcaRegister)
+    public function update(UpdateFormRequest $request, Form $form)
     {
         //
     }
@@ -148,10 +146,10 @@ class FcaRegisterController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\FcaRegister  $fcaRegister
+     * @param  \App\Models\Form  $form
      * @return \Illuminate\Http\Response
      */
-    public function destroy(FcaRegister $fcaRegister)
+    public function destroy(Form $form)
     {
         //
     }

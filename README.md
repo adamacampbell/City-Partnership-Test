@@ -10,3 +10,6 @@ Due to the 'Simple' nature of the project, I have opted out of implementing auth
 Docker was mentionned in the spec, to allow for the project to be reusable. Full disclosure, I had to follow a tutorial to set this up as I'm fairly new to configuring Docker. Apologies in advance if I have done this incorrectly.
 ## 4. Use of '-' in URLs.
 Everyone has their own preferences regarding the use of separators in URLs, I tend to use '-'. I'm not string minded on this and will use whatever other devs are strong minded on (less hassle), but Google do refer to the use of '-' as acceptable. [https://developers.google.com/search/docs/crawling-indexing/url-structure]
+
+## 5. Caching Solution
+I opted to go for a very basic cahing solution, using database as my CACHE_DRIVER. I chose database, as the spec mentioned the tool 'growing over time', and I thought this to be the more scalable approach. To enable caching, I thinkg the .env file will have to be modified to set CACHE_DRIVER=database.
