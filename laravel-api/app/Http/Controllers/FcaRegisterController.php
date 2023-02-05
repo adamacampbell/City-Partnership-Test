@@ -6,9 +6,11 @@ use App\Http\Requests\StoreFcaRegisterRequest;
 use App\Http\Requests\UpdateFcaRegisterRequest;
 use App\Models\FcaCreds;
 use App\Models\FcaRegister;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 
 class FcaRegisterController extends Controller
 {
@@ -28,6 +30,10 @@ class FcaRegisterController extends Controller
         // GET FCA CREDENTIALS
         $fcaCreds = FcaCreds::first();
 
+        // CHECK CACHE FOR FRM
+        $response = Cache::get("frm_exists_{$request->frm}");    
+        if ($response !== null) return $response;
+
         // MAKE FCA API CALL
         $response = Http::withHeaders([
             'X-Auth-Email' => $fcaCreds->email,
@@ -35,11 +41,11 @@ class FcaRegisterController extends Controller
             'Content-Type' => 'application/json'
         ])->get("https://register.fca.org.uk/services/V0.1/Firm/{$request->frm}")->object();
 
-        
         // CHECK STATUS
+        $result = response();
         switch($response->Status) {
             case 'FSR-API-02-01-11':
-                return response(
+                $result = response(
                     [
                         'status' => 'fail',
                         'message' => 'Firm not found',
@@ -48,7 +54,7 @@ class FcaRegisterController extends Controller
                 );
                 break;
             case 'FSR-API-02-01-00':
-                return response(
+                $result = response(
                     [
                         'status' => 'success',
                         'message' => 'Firm found',
@@ -57,7 +63,7 @@ class FcaRegisterController extends Controller
                 );
                 break;
             default:
-                return response(
+                $result = response(
                     [
                         'status' => 'fail',
                         'message' => 'Unknown error occurred',
@@ -66,7 +72,11 @@ class FcaRegisterController extends Controller
                 );
                 break;
         }
-        return $response;
+
+        // CACHE RESPONSE
+        Cache::put("frm_exists_{$request->frm}", $result, 60);
+
+        return $result;
     }
 
     // TODO: REMOVE DEFAULT CONTROLS?
