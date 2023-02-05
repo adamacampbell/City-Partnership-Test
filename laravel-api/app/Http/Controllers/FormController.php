@@ -55,6 +55,11 @@ class FormController extends Controller
 
         // GET FCA CREDENTIALS
         $fcaCreds = FcaCreds::first();
+        if (!$fcaCreds) {
+            return redirect('/')
+                ->with('status', 'danger')
+                ->with('message', 'Must enter FCA API Credentials');
+        }
 
         // CHECK CACHE FOR FRN
         $result = Cache::get("frn_exists_{$request->frn}");    
@@ -69,35 +74,27 @@ class FormController extends Controller
             'Content-Type' => 'application/json'
         ])->get("https://register.fca.org.uk/services/V0.1/Firm/{$request->frn}")->object();
 
+        if (!$response) {
+            return redirect('/')
+                ->with('status', 'danger')
+                ->with('message', 'Must enter valid FCA API Credentials');
+        }
+
         // CHECK STATUS
-        $result = response();
+        $status = null;
+
         switch($response->Status) {
             case 'FSR-API-02-01-11':
-                $result = response(
-                    [
-                        'status' => 'fail',
-                        'message' => 'Firm not found',
-                        'response' => $response
-                    ], 200
-                );
+                $status = 'warning';
+                $message = 'Firm not found';
                 break;
             case 'FSR-API-02-01-00':
-                $result = response(
-                    [
-                        'status' => 'success',
-                        'message' => 'Firm found',
-                        'response' => $response
-                    ], 200
-                );
+                $status = 'success';
+                $message = 'Firm found';
                 break;
             default:
-                $result = response(
-                    [
-                        'status' => 'fail',
-                        'message' => 'Unknown error occurred',
-                        'response' => $response
-                    ], 200
-                );
+                $status = 'danger';
+                $message = 'Unknown error occurred';
                 break;
         }
 
@@ -105,8 +102,9 @@ class FormController extends Controller
         Cache::put("frn_exists_{$request->frn}", $result, 60);
 
         return redirect('/')
-            ->with('status', $result->content('status'))
-            ->with('message', $result->content('message'));
+            ->with('status', $status)
+            ->with('message', $message)
+            ->with('response', $response);
     }
 
     /**

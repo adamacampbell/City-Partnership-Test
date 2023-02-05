@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FcaCredsController;
 use App\Http\Controllers\FormController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,5 +19,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// FORM ROUTEs
+// FORM ROUTES
+Route::post('store-creds', [FcaCredsController::class, 'storeWeb']);
 Route::post('store-form', [FormController::class, 'store']);

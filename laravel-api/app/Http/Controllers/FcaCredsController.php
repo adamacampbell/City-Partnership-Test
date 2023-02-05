@@ -47,6 +47,27 @@ class FcaCredsController extends Controller
     }
 
     /**
+     * Store a newly created resource in storage from Web UI.
+     *
+     * @param  \App\Http\Requests\StoreFcaCredsRequest  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function storeWeb(StoreFcaCredsRequest $request)
+    {
+        $fcaCreds = FcaCreds::create([
+            'email' => $request->email,
+            'key' => $request->key
+        ]);
+        // ENFORCE ONCE CRED ENTRY
+        FcaCreds::whereNot('id', $fcaCreds->id)->delete();
+        
+        // UPDATE UI
+        return redirect('/')
+            ->with('creds-status', 'success')
+            ->with('creds-message', 'Credentials Stored');
+    }
+
+    /**
      * Display the specified resource.
      *
      * @param  \App\Models\FcaCreds  $fcaCreds

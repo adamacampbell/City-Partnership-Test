@@ -16,7 +16,7 @@
                 FCA - API Credentials
             </div>
             <div class="card-body">
-                <form name="add-fca-creds-form" id="add-fca-creds-form" method="post" action="{{ url('store-form') }}">
+                <form name="add-fca-creds-form" id="add-fca-creds-form" method="post" action="{{ url('store-creds') }}">
                     @csrf
                     <div class="form-group">
                         <label for="exampleInputEmail1">FCA - Email</label>
@@ -30,6 +30,24 @@
                 </form>
             </div>
         </div>
+
+        <!-- FCA CREDENTIALS STATUS FEEDBACK -->
+        <div class="container mt-4">
+            @if (session('creds-status'))
+                @switch(session('creds-status'))
+                    @case('success')
+                        <div class="alert alert-success">
+                            {{ session('creds-message') }}
+                        </div>
+                        @break
+                    @case('fail')
+                        <div class="alert alert-danger">
+                            {{ session('creds-message') }}
+                        </div>
+                        @break
+                @endswitch
+            @endif
+    </div>
 
         <!-- CHECK FIRM EXISTS -->
         <div class="card" style="margin-top: 20px">
@@ -48,12 +66,20 @@
             </div>
         </div>
     </div>
+    
+    <!-- FCA FRN CHECK STATUS FEEDBACK -->
+    <div class="container mt-4">
+        @if (session('status'))
+            <div class="alert alert-{{ session('status')}}">
+                {{ session('message') }}
+            </div>
+        @endif
+        @if (session('response'))
+            <div class="alert alert-secondary">
+                FCA API Response: @json(session('response'))
+            </div>
+        @endif
+    </div>
 
-    <!-- STATUS FEEDBACK -->
-    @if (session('status'))
-        <div class="alert alert-success" style="margin: 40px">
-            {{ session('status') }}
-        </div>
-    @endif
 </body>
 </html>
